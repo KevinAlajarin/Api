@@ -1,0 +1,304 @@
+.admin-page {
+  min-height: 100vh;
+  background-color: var(--gray-50);
+  padding: var(--spacing-8) 0;
+}
+
+.admin-unauthorized {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--gray-50);
+}
+
+.admin-unauthorized h1 {
+  color: var(--error-color);
+  margin-bottom: var(--spacing-4);
+}
+
+.admin-header {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+}
+
+.admin-header h1 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-3xl);
+}
+
+.admin-header p {
+  color: var(--gray-600);
+  font-size: var(--font-size-lg);
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--spacing-6);
+  margin-bottom: var(--spacing-12);
+}
+
+.dashboard-card {
+  background: var(--white);
+  padding: var(--spacing-6);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+}
+
+.card-icon {
+  width: 60px;
+  height: 60px;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  flex-shrink: 0;
+}
+
+.card-content h3 {
+  color: var(--gray-700);
+  margin-bottom: var(--spacing-2);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.card-number {
+  color: var(--gray-900);
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  margin-bottom: var(--spacing-1);
+}
+
+.card-label {
+  color: var(--gray-500);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Admin Sections */
+.admin-section {
+  background: var(--white);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-8);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+  margin-bottom: var(--spacing-8);
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-6);
+  flex-wrap: wrap;
+  gap: var(--spacing-4);
+}
+
+.section-header h2 {
+  color: var(--gray-900);
+  margin-bottom: 0;
+}
+
+.section-header p {
+  color: var(--gray-600);
+  margin: 0;
+  flex-basis: 100%;
+}
+
+/* Obra Social Form */
+.obra-social-form {
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-6);
+  margin-bottom: var(--spacing-6);
+}
+
+.obra-social-form h3 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-lg);
+}
+
+.obra-social-form .form-group {
+  margin-bottom: var(--spacing-4);
+}
+
+.obra-social-form .form-actions {
+  display: flex;
+  gap: var(--spacing-3);
+  flex-wrap: wrap;
+}
+
+/* Obras Sociales List */
+.obras-sociales-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+}
+
+.obra-social-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-4);
+  background: var(--gray-50);
+  border: 1px solid var(--gray-200);
+  border-radius: var(--border-radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.obra-social-item:hover {
+  background: var(--white);
+  box-shadow: var(--shadow-sm);
+}
+
+.obra-social-info h4 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-1);
+  font-size: var(--font-size-base);
+}
+
+.status {
+  font-size: var(--font-size-xs);
+  padding: var(--spacing-1) var(--spacing-2);
+  border-radius: var(--border-radius-sm);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status.active {
+  background: var(--success-color);
+  color: var(--white);
+}
+
+.status.inactive {
+  background: var(--gray-400);
+  color: var(--white);
+}
+
+.obra-social-actions {
+  display: flex;
+  gap: var(--spacing-2);
+}
+
+.btn-icon {
+  background: none;
+  border: none;
+  padding: var(--spacing-2);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  color: var(--gray-600);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-icon:hover {
+  background: var(--gray-100);
+  color: var(--gray-800);
+}
+
+.btn-icon.btn-danger:hover {
+  background: #fef2f2;
+  color: var(--error-color);
+}
+
+/* Citas Placeholder */
+.citas-placeholder {
+  background: var(--gray-50);
+  border: 2px dashed var(--gray-300);
+  border-radius: var(--border-radius-lg);
+  padding: var(--spacing-8);
+  text-align: center;
+}
+
+.citas-placeholder p {
+  color: var(--gray-600);
+  margin-bottom: var(--spacing-4);
+}
+
+.citas-placeholder ul {
+  text-align: left;
+  max-width: 400px;
+  margin: 0 auto;
+  color: var(--gray-600);
+}
+
+.citas-placeholder li {
+  margin-bottom: var(--spacing-2);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-page {
+    padding: var(--spacing-6) 0;
+  }
+  
+  .admin-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-4);
+  }
+  
+  .dashboard-card {
+    padding: var(--spacing-4);
+  }
+  
+  .section-header {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+  
+  .section-header .btn {
+    width: 100%;
+  }
+  
+  .obra-social-item {
+    flex-direction: column;
+    gap: var(--spacing-3);
+    text-align: center;
+  }
+  
+  .obra-social-actions {
+    justify-content: center;
+  }
+  
+  .obra-social-form .form-actions {
+    flex-direction: column;
+  }
+  
+  .obra-social-form .form-actions .btn {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-section {
+    padding: var(--spacing-4);
+  }
+  
+  .obra-social-form {
+    padding: var(--spacing-4);
+  }
+  
+  .citas-placeholder {
+    padding: var(--spacing-4);
+  }
+}

@@ -1,0 +1,201 @@
+.appointment-page {
+  min-height: 100vh;
+  background-color: var(--gray-50);
+  padding: var(--spacing-8) 0;
+}
+
+.appointment-header {
+  text-align: center;
+  margin-bottom: var(--spacing-12);
+}
+
+.appointment-header h1 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-3xl);
+}
+
+.appointment-header p {
+  color: var(--gray-600);
+  font-size: var(--font-size-lg);
+  max-width: 600px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+.appointment-content {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: var(--spacing-8);
+  align-items: start;
+}
+
+.form-container {
+  background: var(--white);
+  border-radius: var(--border-radius-xl);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.info-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.info-card {
+  background: var(--white);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-6);
+  box-shadow: var(--shadow-md);
+  border: 1px solid var(--gray-200);
+}
+
+.info-card h3 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-4);
+  font-size: var(--font-size-lg);
+  border-bottom: 2px solid var(--primary-color);
+  padding-bottom: var(--spacing-2);
+}
+
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.info-item {
+  display: flex;
+  gap: var(--spacing-3);
+  align-items: flex-start;
+}
+
+.info-icon {
+  color: var(--primary-color);
+  flex-shrink: 0;
+  margin-top: var(--spacing-1);
+}
+
+.info-content h4 {
+  color: var(--gray-900);
+  margin-bottom: var(--spacing-1);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+}
+
+.info-content p {
+  color: var(--gray-600);
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+}
+
+.insurance-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2);
+}
+
+.insurance-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-2) var(--spacing-3);
+  background-color: var(--gray-50);
+  border-radius: var(--border-radius-md);
+  border: 1px solid var(--gray-200);
+}
+
+.insurance-name {
+  font-weight: 500;
+  color: var(--gray-700);
+}
+
+.insurance-status {
+  color: var(--success-color);
+  font-weight: 600;
+  font-size: var(--font-size-sm);
+}
+
+.contact-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-3);
+  margin-top: var(--spacing-4);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  color: var(--gray-600);
+  font-size: var(--font-size-sm);
+}
+
+.contact-item svg {
+  color: var(--primary-color);
+  flex-shrink: 0;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .appointment-content {
+    grid-template-columns: 1fr;
+    gap: var(--spacing-6);
+  }
+  
+  .info-sidebar {
+    order: -1;
+  }
+}
+
+@media (max-width: 768px) {
+  .appointment-page {
+    padding: var(--spacing-6) 0;
+  }
+  
+  .appointment-header {
+    margin-bottom: var(--spacing-8);
+  }
+  
+  .appointment-header h1 {
+    font-size: var(--font-size-2xl);
+  }
+  
+  .appointment-header p {
+    font-size: var(--font-size-base);
+  }
+  
+  .info-card {
+    padding: var(--spacing-4);
+  }
+  
+  .info-card h3 {
+    font-size: var(--font-size-base);
+  }
+}
+
+@media (max-width: 480px) {
+  .appointment-page {
+    padding: var(--spacing-4) 0;
+  }
+  
+  .appointment-header h1 {
+    font-size: var(--font-size-xl);
+  }
+  
+  .appointment-header p {
+    font-size: var(--font-size-sm);
+  }
+  
+  .info-card {
+    padding: var(--spacing-3);
+  }
+  
+  .insurance-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-1);
+  }
+}
