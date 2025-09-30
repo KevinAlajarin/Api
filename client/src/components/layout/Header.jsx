@@ -56,8 +56,13 @@ const Header = () => {
            </Link>
 
                      {/* Navegación desktop */}
-           <nav className="nav-desktop">
-             <Link to="/">Inicio</Link>
+          <nav className="nav-desktop">
+            <button 
+              onClick={() => navigateToSection('inicio')}
+              className="nav-button"
+            >
+              Inicio
+            </button>
              <button 
                onClick={() => navigateToSection('servicios')}
                className="nav-button"
@@ -122,9 +127,14 @@ const Header = () => {
         </div>
 
                  {/* Navegación móvil */}
-         {isMenuOpen && (
-           <nav className="nav-mobile">
-             <Link to="/" onClick={() => setIsMenuOpen(false)}>Inicio</Link>
+        {isMenuOpen && (
+          <nav className="nav-mobile">
+            <button 
+              onClick={() => navigateToSection('inicio')}
+              className="nav-button-mobile"
+            >
+              Inicio
+            </button>
              <button 
                onClick={() => navigateToSection('servicios')}
                className="nav-button-mobile"
