@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocialSecurity } from '../context/SocialSecurityContext';
-import { Plus, Edit, Trash2, Calendar, Building, Users } from 'lucide-react';
+import { Plus, Edit, Trash2, Calendar, Building, Users, X, Mail, CheckCircle } from 'lucide-react';
 import './Admin.css';
 
 const Admin = () => {
@@ -17,6 +17,50 @@ const Admin = () => {
   const [showObraSocialForm, setShowObraSocialForm] = useState(false);
   const [editingObraSocial, setEditingObraSocial] = useState(null);
   const [formData, setFormData] = useState({ nombre: '' });
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [showEmailInfo, setShowEmailInfo] = useState(false);
+  const [emailNotificado, setEmailNotificado] = useState('');
+
+  // Citas hardcodeadas (mock)
+  const [citas, setCitas] = useState([
+    { id: 'CIT-001', paciente: 'Ana López', email: 'ana.lopez@example.com', fecha: '2025-10-01', hora: '10:00', estado: 'Solicitada' },
+    { id: 'CIT-002', paciente: 'Marcos Díaz', email: 'marcos.diaz@example.com', fecha: '2025-10-01', hora: '11:30', estado: 'Confirmada' },
+    { id: 'CIT-003', paciente: 'Laura Pérez', email: 'laura.perez@example.com', fecha: '2025-10-02', hora: '09:15', estado: 'Solicitada' },
+    { id: 'CIT-004', paciente: 'Julián Torres', email: 'julian.torres@example.com', fecha: '2025-10-03', hora: '12:00', estado: 'Solicitada' },
+    { id: 'CIT-005', paciente: 'Sofía Gómez', email: 'sofia.gomez@example.com', fecha: '2025-10-03', hora: '15:45', estado: 'Confirmada' },
+  ]);
+  const [ordenFecha, setOrdenFecha] = useState('reciente');
+  const [filtroEstado, setFiltroEstado] = useState('');
+
+
+  const citasFiltradas = citas.filter((c) => {
+    const cumpleEstado = filtroEstado ? c.estado === filtroEstado : true;
+    return cumpleEstado;
+  });
+
+  const citasOrdenadas = [...citasFiltradas].sort((a, b) => {
+    const da = new Date(`${a.fecha}T${a.hora}:00`);
+    const db = new Date(`${b.fecha}T${b.hora}:00`);
+    return ordenFecha === 'reciente' ? db - da : da - db;
+  });
+
+  const confirmarCita = (id) => {
+    setCitas((prev) => prev.map((c) => (c.id === id ? { ...c, estado: 'Confirmada' } : c)));
+  };
+
+  const notificarPorEmail = (cita) => {
+    // Simulación de notificación por email con modal propio
+    console.log(`Notificando por email a ${cita.email} para la cita ${cita.id}`);
+    setEmailNotificado(cita.email);
+    setShowEmailInfo(true);
+  };
+
+  const formatFecha = (isoDateStr) => {
+    // Esperado: YYYY-MM-DD → Devuelve: DD-MM-YYYY
+    const [y, m, d] = isoDateStr.split('-');
+    return `${d}-${m}-${y}`;
+  };
 
   // Verificar autenticación
   if (!isAuthenticated()) {
@@ -57,10 +101,22 @@ const Admin = () => {
     setShowObraSocialForm(true);
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm('¿Está seguro de que desea eliminar esta obra social?')) {
-      await deleteObraSocial(id);
+  const handleDelete = (id) => {
+    setConfirmDeleteId(id);
+    setShowConfirm(true);
+  };
+
+  const confirmDeletion = async () => {
+    if (confirmDeleteId) {
+      await deleteObraSocial(confirmDeleteId);
     }
+    setShowConfirm(false);
+    setConfirmDeleteId(null);
+  };
+
+  const cancelDeletion = () => {
+    setShowConfirm(false);
+    setConfirmDeleteId(null);
   };
 
   const handleCancel = () => {
@@ -127,32 +183,62 @@ const Admin = () => {
             </button>
           </div>
 
-          {/* Formulario de Obra Social */}
+          {/* Modal de Obra Social */}
           {showObraSocialForm && (
-            <div className="obra-social-form">
-              <h3>{editingObraSocial ? 'Editar' : 'Nueva'} Obra Social</h3>
-              <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                  <label htmlFor="nombre" className="form-label">Nombre</label>
-                  <input
-                    type="text"
-                    id="nombre"
-                    value={formData.nombre}
-                    onChange={(e) => setFormData({ nombre: e.target.value })}
-                    className="form-input"
-                    placeholder="Nombre de la obra social"
-                    required
-                  />
-                </div>
-                <div className="form-actions">
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
-                    {loading ? 'Guardando...' : (editingObraSocial ? 'Actualizar' : 'Crear')}
-                  </button>
-                  <button type="button" className="btn btn-outline" onClick={handleCancel}>
-                    Cancelar
+            <div className="modal-overlay">
+              <div className="modal">
+                <div className="modal-header">
+                  <h3 className="modal-title">{editingObraSocial ? 'Editar' : 'Nueva'} Obra Social</h3>
+                  <button className="modal-close" onClick={handleCancel} aria-label="Cerrar">
+                    <X size={20} />
                   </button>
                 </div>
-              </form>
+                <div className="modal-body">
+                  <form onSubmit={handleSubmit}>
+                    <div className="form-group">
+                      <label htmlFor="nombre" className="form-label">Nombre</label>
+                      <input
+                        type="text"
+                        id="nombre"
+                        value={formData.nombre}
+                        onChange={(e) => setFormData({ nombre: e.target.value })}
+                        className="form-input"
+                        placeholder="Nombre de la obra social"
+                        required
+                      />
+                    </div>
+                    <div className="form-actions">
+                      <button type="submit" className="btn btn-primary" disabled={loading}>
+                        {loading ? 'Guardando...' : (editingObraSocial ? 'Actualizar' : 'Crear')}
+                      </button>
+                      <button type="button" className="btn btn-outline" onClick={handleCancel}>
+                        Cancelar
+                      </button>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Modal de confirmación de eliminación */}
+          {showConfirm && (
+            <div className="modal-overlay">
+              <div className="modal">
+                <div className="modal-header">
+                  <h3 className="modal-title">Confirmar eliminación</h3>
+                  <button className="modal-close" onClick={cancelDeletion} aria-label="Cerrar">
+                    <X size={20} />
+                  </button>
+                </div>
+                <div className="modal-body">
+                  <p>¿Está seguro de que desea eliminar esta obra social? Esta acción no se puede deshacer.</p>
+                  <div className="modal-actions">
+                    <button className="btn btn-primary" onClick={confirmDeletion}>Eliminar</button>
+                    <button className="btn btn-outline" onClick={cancelDeletion}>Cancelar</button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
 
@@ -191,20 +277,90 @@ const Admin = () => {
         <div className="admin-section">
           <div className="section-header">
             <h2>Gestión de Citas</h2>
-            <p>Aquí podrás ver y gestionar todas las citas solicitadas</p>
+            <p>Lista, filtros, confirmación y notificaciones</p>
           </div>
-          
-          <div className="citas-placeholder">
-            <p>La gestión de citas se implementará en la siguiente fase del desarrollo.</p>
-            <p>Incluirá:</p>
-            <ul>
-              <li>Lista de citas solicitadas</li>
-              <li>Cambio de estado (Solicitada → Confirmada)</li>
-              <li>Filtros por fecha y estado</li>
-              <li>Notificaciones por email</li>
-            </ul>
+
+          {/* Filtros */}
+          <div className="citas-filtros">
+            <div className="form-group">
+              <label className="form-label" htmlFor="ordenFecha">Ordenar por fecha</label>
+              <select
+                id="ordenFecha"
+                className="form-select"
+                value={ordenFecha}
+                onChange={(e) => setOrdenFecha(e.target.value)}
+              >
+                <option value="reciente">Más reciente</option>
+                <option value="antiguo">Más antiguo</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label" htmlFor="filtroEstado">Filtrar por estado</label>
+              <select
+                id="filtroEstado"
+                className="form-select"
+                value={filtroEstado}
+                onChange={(e) => setFiltroEstado(e.target.value)}
+              >
+                <option value="">Todos</option>
+                <option value="Solicitada">Solicitada</option>
+                <option value="Confirmada">Confirmada</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Lista de Citas */}
+          <div className="citas-list">
+            {citasOrdenadas.map((cita) => (
+              <div key={cita.id} className="cita-item">
+                <div className="cita-info">
+                  <div className="cita-id">{cita.id}</div>
+                  <div className="cita-detalle">
+                    <h4>{cita.paciente}</h4>
+                    <p>{formatFecha(cita.fecha)} · {cita.hora}</p>
+                    <p className="cita-email"><Mail size={14} /> {cita.email}</p>
+                  </div>
+                </div>
+                <div className="cita-estado">
+                  <span className={`status ${cita.estado === 'Confirmada' ? 'active' : 'pending'}`}>{cita.estado}</span>
+                </div>
+                <div className="cita-actions">
+                  {cita.estado === 'Solicitada' && (
+                    <button className="btn btn-primary" onClick={() => confirmarCita(cita.id)}>
+                      <CheckCircle size={16} /> Confirmar
+                    </button>
+                  )}
+                  <button className="btn btn-outline" onClick={() => notificarPorEmail(cita)}>
+                    <Mail size={16} /> Notificar Email
+                  </button>
+                </div>
+              </div>
+            ))}
+            {citasOrdenadas.length === 0 && (
+              <div className="citas-vacio">No hay citas para los filtros seleccionados.</div>
+            )}
           </div>
         </div>
+
+        {/* Modal de notificación enviada */}
+        {showEmailInfo && (
+          <div className="modal-overlay">
+            <div className="modal email-info">
+              <div className="modal-header">
+                <h3 className="modal-title">Notificación enviada</h3>
+                <button className="modal-close" onClick={() => setShowEmailInfo(false)} aria-label="Cerrar">
+                  <X size={20} />
+                </button>
+              </div>
+              <div className="modal-body">
+                <p>Se ha enviado el mail a "{emailNotificado}".</p>
+                <div className="modal-actions">
+                  <button className="btn btn-primary" onClick={() => setShowEmailInfo(false)}>Continuar</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

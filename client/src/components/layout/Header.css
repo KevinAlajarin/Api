@@ -64,7 +64,19 @@
   font-weight: 500;
   transition: color var(--transition-fast);
   text-decoration: none;
+  font-size: var(--font-size-base);
+  padding: var(--spacing-2) 0;
 }
+
+/* Forzar texto blanco en botones primarios de la navegación */
+.nav-desktop a.btn.btn-primary {
+  color: var(--white);
+  padding: var(--spacing-4) var(--spacing-8);
+}
+.nav-desktop a.btn.btn-primary:hover {
+  color: var(--white);
+}
+
 
 .nav-desktop a:hover {
   color: var(--primary-color);
@@ -173,6 +185,16 @@
   font-weight: 500;
   transition: color var(--transition-fast);
 }
+
+/* Forzar texto blanco en botones primarios del menú móvil */
+.nav-mobile a.btn.btn-primary {
+  color: var(--white);
+  padding: var(--spacing-4) var(--spacing-8);
+}
+.nav-mobile a.btn.btn-primary:hover {
+  color: var(--white);
+}
+
 
 .nav-mobile a:hover {
   color: var(--primary-color);

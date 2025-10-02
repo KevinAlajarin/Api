@@ -63,7 +63,7 @@ const Home = () => {
         <div className="container">
           <div className="hero-content">
             <div className="hero-text">
-              <h1>Dr. Juan Pérez</h1>
+              <h1>Dr. Juan Perez</h1>
               <h2>Cardiólogo Especialista</h2>
               <p>
                 Más de 10 años de experiencia en el diagnóstico y tratamiento de enfermedades cardiovasculares. 
