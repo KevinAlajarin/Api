@@ -1,9 +1,9 @@
 /* Variables CSS para la aplicación médica */
 :root {
   /* Colores principales */
-  --primary-color: #2563eb;
-  --primary-dark: #1d4ed8;
-  --primary-light: #3b82f6;
+  --primary-color: #5385f1;
+  --primary-dark: #3461f7;
+  --primary-light: #699cee;
   
   /* Colores secundarios */
   --secondary-color: #10b981;
@@ -14,7 +14,7 @@
   --success-color: #10b981;
   --warning-color: #f59e0b;
   --error-color: #ef4444;
-  --info-color: #3b82f6;
+  --info-color: #3e97e0;
   
   /* Colores neutros */
   --white: #ffffff;
