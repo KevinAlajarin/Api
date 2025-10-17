@@ -24,11 +24,11 @@ const Admin = () => {
 
   // Citas hardcodeadas (mock)
   const [citas, setCitas] = useState([
-    { id: 'CIT-001', paciente: 'Ana López', email: 'ana.lopez@example.com', fecha: '2025-10-01', hora: '10:00', estado: 'Solicitada' },
-    { id: 'CIT-002', paciente: 'Marcos Díaz', email: 'marcos.diaz@example.com', fecha: '2025-10-01', hora: '11:30', estado: 'Confirmada' },
-    { id: 'CIT-003', paciente: 'Laura Pérez', email: 'laura.perez@example.com', fecha: '2025-10-02', hora: '09:15', estado: 'Solicitada' },
-    { id: 'CIT-004', paciente: 'Julián Torres', email: 'julian.torres@example.com', fecha: '2025-10-03', hora: '12:00', estado: 'Solicitada' },
-    { id: 'CIT-005', paciente: 'Sofía Gómez', email: 'sofia.gomez@example.com', fecha: '2025-10-03', hora: '15:45', estado: 'Confirmada' },
+    { id: 'CIT-001', paciente: 'Ana Lopez', email: 'ana.lopez@example.com', fecha: '2025-10-01', hora: '10:00', estado: 'Solicitada' },
+    { id: 'CIT-002', paciente: 'Marcos Diaz', email: 'marcos.diaz@example.com', fecha: '2025-10-01', hora: '11:30', estado: 'Confirmada' },
+    { id: 'CIT-003', paciente: 'Laura Perez', email: 'laura.perez@example.com', fecha: '2025-10-02', hora: '09:15', estado: 'Solicitada' },
+    { id: 'CIT-004', paciente: 'Julian Torres', email: 'julian.torres@example.com', fecha: '2025-10-03', hora: '12:00', estado: 'Solicitada' },
+    { id: 'CIT-005', paciente: 'Sofia Gomez', email: 'sofia.gomez@example.com', fecha: '2025-10-03', hora: '15:45', estado: 'Confirmada' },
   ]);
   const [ordenFecha, setOrdenFecha] = useState('reciente');
   const [filtroEstado, setFiltroEstado] = useState('');
@@ -47,6 +47,10 @@ const Admin = () => {
 
   const confirmarCita = (id) => {
     setCitas((prev) => prev.map((c) => (c.id === id ? { ...c, estado: 'Confirmada' } : c)));
+  };
+
+  const cancelarCita = (id) => {
+    setCitas((prev) => prev.map((c) => (c.id === id ? { ...c, estado: 'Cancelada' } : c)));
   };
 
   const notificarPorEmail = (cita) => {
@@ -205,6 +209,9 @@ const Admin = () => {
                         className="form-input"
                         placeholder="Nombre de la obra social"
                         required
+                        autoComplete="off"
+                        autoCorrect="off"
+                        spellCheck="false"
                       />
                     </div>
                     <div className="form-actions">
@@ -277,7 +284,6 @@ const Admin = () => {
         <div className="admin-section">
           <div className="section-header">
             <h2>Gestión de Citas</h2>
-            <p>Lista, filtros, confirmación y notificaciones</p>
           </div>
 
           {/* Filtros */}
@@ -305,6 +311,7 @@ const Admin = () => {
                 <option value="">Todos</option>
                 <option value="Solicitada">Solicitada</option>
                 <option value="Confirmada">Confirmada</option>
+                <option value="Cancelada">Cancelada</option>
               </select>
             </div>
           </div>
@@ -322,12 +329,20 @@ const Admin = () => {
                   </div>
                 </div>
                 <div className="cita-estado">
-                  <span className={`status ${cita.estado === 'Confirmada' ? 'active' : 'pending'}`}>{cita.estado}</span>
+                  <span className={`status ${
+                    cita.estado === 'Confirmada' ? 'active' : 
+                    cita.estado === 'Cancelada' ? 'cancelled' : 'pending'
+                  }`}>{cita.estado}</span>
                 </div>
                 <div className="cita-actions">
                   {cita.estado === 'Solicitada' && (
                     <button className="btn btn-primary" onClick={() => confirmarCita(cita.id)}>
                       <CheckCircle size={16} /> Confirmar
+                    </button>
+                  )}
+                  {(cita.estado === 'Solicitada' || cita.estado === 'Confirmada') && (
+                    <button className="btn btn-outline btn-danger" onClick={() => cancelarCita(cita.id)}>
+                      <X size={16} /> Cancelar
                     </button>
                   )}
                   <button className="btn btn-outline" onClick={() => notificarPorEmail(cita)}>

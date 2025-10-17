@@ -8,9 +8,33 @@ import CalendarComponent from '../ui/Calendar';
 import './AppointmentForm.css';
 
 const schema = yup.object({
-  nombre: yup.string().required('El nombre es requerido'),
-  apellido: yup.string().required('El apellido es requerido'),
-  telefono: yup.string().required('El teléfono es requerido'),
+  nombre: yup
+    .string()
+    .required('El nombre es requerido')
+    .matches(
+      /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/,
+      'El nombre solo puede contener letras y espacios'
+    )
+    .min(2, 'El nombre debe tener al menos 2 caracteres')
+    .max(50, 'El nombre no puede tener más de 50 caracteres'),
+  apellido: yup
+    .string()
+    .required('El apellido es requerido')
+    .matches(
+      /^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$/,
+      'El apellido solo puede contener letras y espacios'
+    )
+    .min(2, 'El apellido debe tener al menos 2 caracteres')
+    .max(50, 'El apellido no puede tener más de 50 caracteres'),
+  telefono: yup
+    .string()
+    .required('El teléfono es requerido')
+    .matches(
+      /^(\+54\s?)?(\(?0?\)?)?[1-9]\d{2,3}[\s-]?\d{3,4}[\s-]?\d{3,4}$/,
+      'Formato de teléfono inválido. Ejemplo: +54 11 1234-5678 o 011 1234-5678'
+    )
+    .min(8, 'El teléfono debe tener al menos 8 dígitos')
+    .max(20, 'El teléfono no puede tener más de 20 caracteres'),
   email: yup.string().email('Email inválido').required('El email es requerido'),
   obraSocial: yup.string().required('Debe seleccionar una obra social'),
   fecha: yup.string().required('Debe seleccionar una fecha'),
@@ -31,7 +55,8 @@ const AppointmentForm = () => {
     setValue,
     watch
   } = useForm({
-    resolver: yupResolver(schema)
+    resolver: yupResolver(schema),
+    mode: 'onChange'
   });
 
   const watchedFecha = watch('fecha');
@@ -167,6 +192,9 @@ const AppointmentForm = () => {
                 {...register('nombre')}
                 className={`form-input ${errors.nombre ? 'error' : ''}`}
                 placeholder="Su nombre"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               {errors.nombre && (
                 <span className="error-text">{errors.nombre.message}</span>
@@ -184,6 +212,9 @@ const AppointmentForm = () => {
                 {...register('apellido')}
                 className={`form-input ${errors.apellido ? 'error' : ''}`}
                 placeholder="Su apellido"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               {errors.apellido && (
                 <span className="error-text">{errors.apellido.message}</span>
@@ -202,7 +233,10 @@ const AppointmentForm = () => {
                 id="telefono"
                 {...register('telefono')}
                 className={`form-input ${errors.telefono ? 'error' : ''}`}
-                placeholder="+54 11 1234-5678"
+                placeholder="Ej: +54 11 1234-5678 o 011 1234-5678"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               {errors.telefono && (
                 <span className="error-text">{errors.telefono.message}</span>
@@ -220,6 +254,9 @@ const AppointmentForm = () => {
                 {...register('email')}
                 className={`form-input ${errors.email ? 'error' : ''}`}
                 placeholder="su@email.com"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               {errors.email && (
                 <span className="error-text">{errors.email.message}</span>

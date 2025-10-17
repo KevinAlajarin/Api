@@ -70,16 +70,33 @@
 
 /* Forzar texto blanco en botones primarios de la navegación */
 .nav-desktop a.btn.btn-primary {
-  color: var(--white);
+  color: var(--white) !important;
   padding: var(--spacing-4) var(--spacing-8);
+  background-color: var(--primary-color) !important;
 }
+
 .nav-desktop a.btn.btn-primary:hover {
-  color: var(--white);
+  color: var(--white) !important;
+  background-color: var(--primary-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Asegurar que el texto sea visible en todos los estados */
+.nav-desktop a.btn.btn-primary:focus,
+.nav-desktop a.btn.btn-primary:active,
+.nav-desktop a.btn.btn-primary:visited {
+  color: var(--white) !important;
 }
 
 
 .nav-desktop a:hover {
   color: var(--primary-color);
+}
+
+/* Excepción para botones primarios - no cambiar color en hover */
+.nav-desktop a.btn.btn-primary:hover {
+  color: var(--white) !important;
 }
 
 .nav-desktop .btn {
@@ -188,16 +205,33 @@
 
 /* Forzar texto blanco en botones primarios del menú móvil */
 .nav-mobile a.btn.btn-primary {
-  color: var(--white);
+  color: var(--white) !important;
   padding: var(--spacing-4) var(--spacing-8);
+  background-color: var(--primary-color) !important;
 }
+
 .nav-mobile a.btn.btn-primary:hover {
-  color: var(--white);
+  color: var(--white) !important;
+  background-color: var(--primary-dark) !important;
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Asegurar que el texto sea visible en todos los estados */
+.nav-mobile a.btn.btn-primary:focus,
+.nav-mobile a.btn.btn-primary:active,
+.nav-mobile a.btn.btn-primary:visited {
+  color: var(--white) !important;
 }
 
 
 .nav-mobile a:hover {
   color: var(--primary-color);
+}
+
+/* Excepción para botones primarios - no cambiar color en hover */
+.nav-mobile a.btn.btn-primary:hover {
+  color: var(--white) !important;
 }
 
 .nav-mobile .btn {
@@ -259,4 +293,51 @@
   .user-button span {
     display: none;
   }
+}
+
+/* ESTILOS ESPECÍFICOS PARA BOTONES CTA DEL HEADER */
+.header-cta-btn {
+  color: var(--white) !important;
+  background-color: var(--primary-color) !important;
+  border: none !important;
+  text-decoration: none !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: var(--spacing-3) var(--spacing-6) !important;
+  border-radius: var(--border-radius-lg) !important;
+  font-size: var(--font-size-base) !important;
+  font-weight: 500 !important;
+  cursor: pointer !important;
+  transition: all var(--transition-fast) !important;
+  gap: var(--spacing-2) !important;
+}
+
+.header-cta-btn:hover {
+  color: var(--white) !important;
+  background-color: var(--primary-dark) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+  text-decoration: none !important;
+}
+
+.header-cta-btn:focus {
+  color: var(--white) !important;
+  background-color: var(--primary-dark) !important;
+  text-decoration: none !important;
+  outline: 2px solid var(--primary-light) !important;
+  outline-offset: 2px !important;
+}
+
+.header-cta-btn:active {
+  color: var(--white) !important;
+  background-color: var(--primary-dark) !important;
+  text-decoration: none !important;
+  transform: translateY(0) !important;
+}
+
+.header-cta-btn:visited {
+  color: var(--white) !important;
+  background-color: var(--primary-color) !important;
+  text-decoration: none !important;
 }

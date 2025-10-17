@@ -12,6 +12,21 @@ const Header = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  // Función para manejar hover de botones CTA
+  const handleCtaHover = (e, isHover) => {
+    if (isHover) {
+      e.target.style.backgroundColor = '#3461f7';
+      e.target.style.color = 'white';
+      e.target.style.transform = 'translateY(-1px)';
+      e.target.style.boxShadow = '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)';
+    } else {
+      e.target.style.backgroundColor = '#5385f1';
+      e.target.style.color = 'white';
+      e.target.style.transform = 'translateY(0)';
+      e.target.style.boxShadow = 'none';
+    }
+  };
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
@@ -82,9 +97,33 @@ const Header = () => {
                Contacto
              </button>
              {isAuthenticated() ? (
-               <Link to="/admin" className="btn btn-primary">Gestionar Citas</Link>
+               <Link 
+                 to="/admin" 
+                 className="btn btn-primary header-cta-btn"
+                 style={{
+                   color: 'white !important',
+                   backgroundColor: '#5385f1 !important',
+                   textDecoration: 'none !important'
+                 }}
+                 onMouseEnter={(e) => handleCtaHover(e, true)}
+                 onMouseLeave={(e) => handleCtaHover(e, false)}
+               >
+                 Gestionar Citas
+               </Link>
              ) : (
-               <Link to="/reservar" className="btn btn-primary">Reservar Cita</Link>
+               <Link 
+                 to="/reservar" 
+                 className="btn btn-primary header-cta-btn"
+                 style={{
+                   color: 'white !important',
+                   backgroundColor: '#5385f1 !important',
+                   textDecoration: 'none !important'
+                 }}
+                 onMouseEnter={(e) => handleCtaHover(e, true)}
+                 onMouseLeave={(e) => handleCtaHover(e, false)}
+               >
+                 Reservar Cita
+               </Link>
              )}
            </nav>
 
@@ -154,11 +193,33 @@ const Header = () => {
                Contacto
              </button>
              {isAuthenticated() ? (
-               <Link to="/admin" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
+               <Link 
+                 to="/admin" 
+                 className="btn btn-primary header-cta-btn" 
+                 onClick={() => setIsMenuOpen(false)}
+                 style={{
+                   color: 'white !important',
+                   backgroundColor: '#5385f1 !important',
+                   textDecoration: 'none !important'
+                 }}
+                 onMouseEnter={(e) => handleCtaHover(e, true)}
+                 onMouseLeave={(e) => handleCtaHover(e, false)}
+               >
                  Gestionar Citas
                </Link>
              ) : (
-               <Link to="/reservar" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>
+               <Link 
+                 to="/reservar" 
+                 className="btn btn-primary header-cta-btn" 
+                 onClick={() => setIsMenuOpen(false)}
+                 style={{
+                   color: 'white !important',
+                   backgroundColor: '#5385f1 !important',
+                   textDecoration: 'none !important'
+                 }}
+                 onMouseEnter={(e) => handleCtaHover(e, true)}
+                 onMouseLeave={(e) => handleCtaHover(e, false)}
+               >
                  Reservar Cita
                </Link>
              )}

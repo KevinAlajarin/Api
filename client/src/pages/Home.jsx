@@ -128,7 +128,7 @@ const Home = () => {
         <div className="container">
           <div className="section-header">
             <h2>Formación Académica</h2>
-            <p>Una sólida base educativa que respalda nuestra experiencia profesional</p>
+            <p>Una sólida base educativa que respalda nuestra experiencia profesional.</p>
           </div>
           
           <div className="education-timeline">

@@ -77,6 +77,9 @@ const LoginModal = ({ isOpen, onClose }) => {
               placeholder="Ingrese su usuario"
               required
               disabled={loading}
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
             />
           </div>
 
@@ -95,6 +98,9 @@ const LoginModal = ({ isOpen, onClose }) => {
                 placeholder="Ingrese su contraseña"
                 required
                 disabled={loading}
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck="false"
               />
               <button
                 type="button"
@@ -130,17 +136,7 @@ const LoginModal = ({ isOpen, onClose }) => {
             </button>
           </div>
 
-          <div className="login-info">
-            <p className="text-center">
-              <strong>Credenciales de prueba:</strong>
-            </p>
-            <p className="text-center">
-              Usuario: <code>medico</code> | Contraseña: <code>123456</code>
-            </p>
-            <p className="text-center">
-              Usuario: <code>secretaria</code> | Contraseña: <code>123456</code>
-            </p>
-          </div>
+
         </form>
       </div>
     </div>

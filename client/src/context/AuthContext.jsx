@@ -30,12 +30,26 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Aquí se hará la llamada al backend
-      // Por ahora simulamos el login
+      // Credenciales válidas hardcodeadas
+      const validCredentials = {
+        'medico': '123456',
+        'secretaria': '123456'
+      };
+
+      // Validar credenciales
+      if (!validCredentials[credentials.username] || 
+          validCredentials[credentials.username] !== credentials.password) {
+        return { 
+          success: false, 
+          error: 'Credenciales inválidas.' 
+        };
+      }
+
+      // Crear usuario mock solo si las credenciales son válidas
       const mockUser = {
-        id: 1,
+        id: credentials.username === 'medico' ? 1 : 2,
         username: credentials.username,
-        role: 'medico', // o 'secretaria'
+        role: credentials.username === 'medico' ? 'medico' : 'secretaria',
         name: credentials.username === 'medico' ? 'Dr. Juan Pérez' : 'María González',
         email: credentials.username === 'medico' ? 'dr.perez@clinica.com' : 'secretaria@clinica.com'
       };

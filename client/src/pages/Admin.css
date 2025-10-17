@@ -298,6 +298,17 @@
   color: var(--error-color);
 }
 
+/* Botón de peligro para cancelar citas */
+.btn-danger {
+  color: var(--error-color) !important;
+  border-color: var(--error-color) !important;
+}
+
+.btn-danger:hover {
+  background-color: var(--error-color) !important;
+  color: var(--white) !important;
+}
+
 /* Citas Placeholder */
 /* Citas - Filtros y lista */
 .citas-filtros {
@@ -339,6 +350,7 @@
 
 .cita-estado { text-align: right; }
 .status.pending { background: var(--warning-color); color: var(--white); }
+.status.cancelled { background: var(--error-color); color: var(--white); }
 
 .cita-actions { display: flex; gap: var(--spacing-2); justify-content: flex-end; }
 
