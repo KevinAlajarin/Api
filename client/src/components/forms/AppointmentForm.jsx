@@ -6,6 +6,10 @@ import { Calendar, Clock, User, Phone, Mail, Building, CheckCircle } from 'lucid
 import { useSocialSecurity } from '../../context/SocialSecurityContext';
 import CalendarComponent from '../ui/Calendar';
 import './AppointmentForm.css';
+import axios from 'axios';
+
+
+const API_URL = 'http://localhost:3000'
 
 const schema = yup.object({
   nombre: yup
@@ -36,17 +40,18 @@ const schema = yup.object({
     .min(8, 'El teléfono debe tener al menos 8 dígitos')
     .max(20, 'El teléfono no puede tener más de 20 caracteres'),
   email: yup.string().email('Email inválido').required('El email es requerido'),
-  obraSocial: yup.string().required('Debe seleccionar una obra social'),
+  obraSocialId: yup.string().required('Debe seleccionar una obra social'),
   fecha: yup.string().required('Debe seleccionar una fecha'),
   horario: yup.string().required('Debe seleccionar un horario')
 });
 
 const AppointmentForm = () => {
-  const { getActiveObrasSociales } = useSocialSecurity();
+  const { getActiveObrasSociales, loading:loadingObrasSociales } = useSocialSecurity();
   const [selectedDate, setSelectedDate] = useState(null);
   const [availableSlots, setAvailableSlots] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
   const {
     register,
@@ -62,7 +67,7 @@ const AppointmentForm = () => {
   const watchedFecha = watch('fecha');
 
   // Obras sociales disponibles desde el contexto
-  const obrasSociales = getActiveObrasSociales().map(obra => obra.nombre);
+  const obrasSociales = getActiveObrasSociales();
 
   // Generar fechas disponibles para las próximas 2 semanas
   const generateAvailableDates = () => {
@@ -89,74 +94,61 @@ const AppointmentForm = () => {
     return dates;
   };
 
-  // Generar horarios disponibles
-  const generateTimeSlots = () => {
-    const slots = [];
-    for (let hour = 9; hour <= 17; hour++) {
-      slots.push(`${hour.toString().padStart(2, '0')}:00`);
-      if (hour < 17) {
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
-      }
-    }
-    return slots;
-  };
 
-  // Simular verificación de disponibilidad
-  const checkAvailability = (date, time) => {
-    // En una implementación real, esto verificaría contra el backend
-    const random = Math.random();
-    return random > 0.3; // 70% de probabilidad de estar disponible
-  };
+
+  
 
   useEffect(() => {
+    const fetchAvailableSlots = async (date) => {
+      setLoadingSlots(true);
+      setAvailableSlots([]); // Limpiamos los horarios anteriores
+      setValue('horario', ''); // Reseteamos el valor del formulario
+
+      try {
+        // Esta es una NUEVA RUTA que deberás crear en tu backend
+        // (Te explico más abajo)
+        const response = await axios.get(`${API_URL}/api/citas/disponibilidad`, {
+          params: { fecha: date }
+        });
+        setAvailableSlots(response.data.slots || []);
+      } catch (error) {
+        console.error("Error al buscar horarios disponibles:", error);
+        setAvailableSlots([]); // En caso de error, no mostramos horarios
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+
     if (watchedFecha) {
-      const slots = generateTimeSlots();
-      const available = slots.filter(slot => checkAvailability(watchedFecha, slot));
-      setAvailableSlots(available);
-      setValue('horario', ''); // Reset horario cuando cambia la fecha
+      fetchAvailableSlots(watchedFecha);
     }
   }, [watchedFecha, setValue]);
 
   const onSubmit = async (data) => {
     setIsSubmitting(true);
-    
     try {
-      // Simular envío al backend
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      console.log('Datos de la cita:', {
-        ...data,
-        nombreCompleto: `${data.nombre} ${data.apellido}`
-      });
+      const response = await axios.post(`${API_URL}/api/citas`, data);
+
+      console.log("✅ Cita guardada:", response.data);
       setSubmitSuccess(true);
-      
-      // Reset form
-      setValue('nombre', '');
-      setValue('apellido', '');
-      setValue('telefono', '');
-      setValue('email', '');
-      setValue('obraSocial', '');
-      setValue('fecha', '');
-      setValue('horario', '');
+
+      // Reset del formulario
+      Object.keys(data).forEach((key) => setValue(key, ""));
       setSelectedDate(null);
-      
+      setAvailableSlots([]); 
     } catch (error) {
-      console.error('Error al enviar la cita:', error);
+      console.error("❌ Error al enviar la cita:", error);
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
     const dateString = date.toISOString().split('T')[0];
     setValue('fecha', dateString);
     
-    // Actualizar horarios disponibles para la fecha seleccionada
-    const slots = generateTimeSlots();
-    const available = slots.filter(slot => checkAvailability(dateString, slot));
-    setAvailableSlots(available);
-    setValue('horario', ''); // Reset horario cuando cambia la fecha
   };
 
   if (submitSuccess) {
@@ -270,19 +262,20 @@ const AppointmentForm = () => {
               Obra Social
             </label>
             <select
-              id="obraSocial"
-              {...register('obraSocial')}
-              className={`form-select ${errors.obraSocial ? 'error' : ''}`}
+              id="obraSocialId"
+              {...register('obraSocialId')}
+              className={`form-select ${errors.obraSocialId ? 'error' : ''}`}
+              disabled={loadingObrasSociales}
             >
-              <option value="">Seleccione una obra social</option>
-              {obrasSociales.map((obra, index) => (
-                <option key={index} value={obra}>
-                  {obra}
+              <option value="">{loadingObrasSociales ? 'Cargando obras sociales ...' : 'Seleccione una obra social'}</option>
+              {obrasSociales.map((obra) => (
+                <option key={obra.id} value={obra.id}>
+                  {obra.nombre}
                 </option>
               ))}
             </select>
-            {errors.obraSocial && (
-              <span className="error-text">{errors.obraSocial.message}</span>
+            {errors.obraSocialId && (
+              <span className="error-text">{errors.obraSocialId.message}</span>
             )}
           </div>
 
@@ -313,10 +306,11 @@ const AppointmentForm = () => {
               id="horario"
               {...register('horario')}
               className={`form-select ${errors.horario ? 'error' : ''}`}
-              disabled={!watchedFecha}
+              disabled={!watchedFecha || loadingSlots || isSubmitting}
             >
               <option value="">
-                {watchedFecha ? 'Seleccione un horario' : 'Primero seleccione una fecha'}
+                {watchedFecha ?(loadingSlots ? 'Cargando horarios...' : 'Seleccione un horario') 
+                : 'Primero seleccione una fecha'}
               </option>
               {availableSlots.map((slot, index) => (
                 <option key={index} value={slot}>
@@ -333,7 +327,7 @@ const AppointmentForm = () => {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={isSubmitting}
+              disabled={isSubmitting || loadingSlots || loadingObrasSociales}
             >
               {isSubmitting ? (
                 <>

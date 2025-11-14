@@ -2,55 +2,58 @@ import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocialSecurity } from '../context/SocialSecurityContext';
 import { Plus, Edit, Trash2, Calendar, Building, Users, X, Mail, CheckCircle } from 'lucide-react';
+import { useCitas } from '../context/CitaContext';
 import './Admin.css';
 
 const Admin = () => {
   const { user, isAuthenticated } = useAuth();
   const { 
     obrasSociales, 
-    loading, 
+    loading : loadingObras, 
     createObraSocial, 
     updateObraSocial, 
     deleteObraSocial 
   } = useSocialSecurity();
 
+
+  const {
+    citas: citasReales,
+    loading: loadingCitas,
+    updateCitaEstado
+  } = useCitas();
+
   const [showObraSocialForm, setShowObraSocialForm] = useState(false);
   const [editingObraSocial, setEditingObraSocial] = useState(null);
-  const [formData, setFormData] = useState({ nombre: '' });
+  const [formData, setFormData] = useState({ nombre: '', activa: true });
   const [showConfirm, setShowConfirm] = useState(false);
   const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [showEmailInfo, setShowEmailInfo] = useState(false);
   const [emailNotificado, setEmailNotificado] = useState('');
+  
 
   // Citas hardcodeadas (mock)
-  const [citas, setCitas] = useState([
-    { id: 'CIT-001', paciente: 'Ana Lopez', email: 'ana.lopez@example.com', fecha: '2025-10-01', hora: '10:00', estado: 'Solicitada' },
-    { id: 'CIT-002', paciente: 'Marcos Diaz', email: 'marcos.diaz@example.com', fecha: '2025-10-01', hora: '11:30', estado: 'Confirmada' },
-    { id: 'CIT-003', paciente: 'Laura Perez', email: 'laura.perez@example.com', fecha: '2025-10-02', hora: '09:15', estado: 'Solicitada' },
-    { id: 'CIT-004', paciente: 'Julian Torres', email: 'julian.torres@example.com', fecha: '2025-10-03', hora: '12:00', estado: 'Solicitada' },
-    { id: 'CIT-005', paciente: 'Sofia Gomez', email: 'sofia.gomez@example.com', fecha: '2025-10-03', hora: '15:45', estado: 'Confirmada' },
-  ]);
+  
   const [ordenFecha, setOrdenFecha] = useState('reciente');
   const [filtroEstado, setFiltroEstado] = useState('');
 
 
-  const citasFiltradas = citas.filter((c) => {
+  const citasFiltradas = citasReales.filter((c) => {
     const cumpleEstado = filtroEstado ? c.estado === filtroEstado : true;
     return cumpleEstado;
   });
 
   const citasOrdenadas = [...citasFiltradas].sort((a, b) => {
-    const da = new Date(`${a.fecha}T${a.hora}:00`);
-    const db = new Date(`${b.fecha}T${b.hora}:00`);
+    const da = new Date(`${a.fecha}T${a.horario}:00`);
+    const db = new Date(`${b.fecha}T${b.horario}:00`);
     return ordenFecha === 'reciente' ? db - da : da - db;
   });
 
   const confirmarCita = (id) => {
-    setCitas((prev) => prev.map((c) => (c.id === id ? { ...c, estado: 'Confirmada' } : c)));
+    updateCitaEstado(id, 'Confirmada');
   };
 
   const cancelarCita = (id) => {
-    setCitas((prev) => prev.map((c) => (c.id === id ? { ...c, estado: 'Cancelada' } : c)));
+    updateCitaEstado(id, 'Cancelada');
   };
 
   const notificarPorEmail = (cita) => {
@@ -80,10 +83,15 @@ const Admin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const dataToSend = {
+      nombre: formData.nombre,
+      // Aseguramos que 'activa' tenga un valor (true/false)
+      activa: formData.activa === undefined ? true : formData.activa 
+    };
     
     if (editingObraSocial) {
       // Actualizar obra social existente
-      const result = await updateObraSocial(editingObraSocial.id, { nombre: formData.nombre });
+      const result = await updateObraSocial(editingObraSocial.id, dataToSend);
       if (result.success) {
         setEditingObraSocial(null);
         setFormData({ nombre: '' });
@@ -101,7 +109,7 @@ const Admin = () => {
 
   const handleEdit = (obraSocial) => {
     setEditingObraSocial(obraSocial);
-    setFormData({ nombre: obraSocial.nombre });
+    setFormData({ nombre: obraSocial.nombre, activa: obraSocial.activa });
     setShowObraSocialForm(true);
   };
 
@@ -125,7 +133,7 @@ const Admin = () => {
 
   const handleCancel = () => {
     setEditingObraSocial(null);
-    setFormData({ nombre: '' });
+    setFormData({ nombre: '', activa: true });
     setShowObraSocialForm(false);
   };
 
@@ -146,7 +154,7 @@ const Admin = () => {
             </div>
             <div className="card-content">
               <h3>Citas Pendientes</h3>
-              <p className="card-number">12</p>
+              <p className="card-number">{loadingCitas ? '...' : citasReales.filter(c => c.estado === 'Solicitada').length}</p>
               <span className="card-label">Por confirmar</span>
             </div>
           </div>
@@ -157,7 +165,7 @@ const Admin = () => {
             </div>
             <div className="card-content">
               <h3>Obras Sociales</h3>
-              <p className="card-number">{obrasSociales.length}</p>
+              <p className="card-number">{loadingObras ? '...' : obrasSociales.filter(o => o.activa).length}</p>
               <span className="card-label">Activas</span>
             </div>
           </div>
@@ -168,8 +176,8 @@ const Admin = () => {
             </div>
             <div className="card-content">
               <h3>Pacientes</h3>
-              <p className="card-number">156</p>
-              <span className="card-label">Registrados</span>
+              <p className="card-number">{loadingCitas ? '...' : citasReales.filter(c => c.estado === 'Confirmada').length}</p>
+              <span className="card-label">Atendidos</span>
             </div>
           </div>
         </div>
@@ -180,7 +188,12 @@ const Admin = () => {
             <h2>Gestión de Obras Sociales</h2>
             <button 
               className="btn btn-primary"
-              onClick={() => setShowObraSocialForm(true)}
+              onClick={() => {
+                setShowObraSocialForm(true);
+                setEditingObraSocial(null);
+                setFormData({ nombre: '', activa: true });
+              }}
+                
             >
               <Plus size={16} />
               Nueva Obra Social
@@ -205,7 +218,7 @@ const Admin = () => {
                         type="text"
                         id="nombre"
                         value={formData.nombre}
-                        onChange={(e) => setFormData({ nombre: e.target.value })}
+                        onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
                         className="form-input"
                         placeholder="Nombre de la obra social"
                         required
@@ -214,9 +227,19 @@ const Admin = () => {
                         spellCheck="false"
                       />
                     </div>
+                    <div className="form-check">
+                        <input
+                          type="checkbox"
+                          id="activa"
+                          checked={formData.activa }
+                          onChange={(e) => setFormData({ ...formData, activa: e.target.checked })}
+                          className="form-check-input"
+                        />
+                        <label htmlFor="activa" className="form-check-label">Activa</label>
+                    </div>
                     <div className="form-actions">
-                      <button type="submit" className="btn btn-primary" disabled={loading}>
-                        {loading ? 'Guardando...' : (editingObraSocial ? 'Actualizar' : 'Crear')}
+                      <button type="submit" className="btn btn-primary" disabled={loadingObras}>
+                        {loadingObras ? 'Guardando...' : (editingObraSocial ? 'Actualizar' : 'Crear')}
                       </button>
                       <button type="button" className="btn btn-outline" onClick={handleCancel}>
                         Cancelar
@@ -251,7 +274,7 @@ const Admin = () => {
 
           {/* Lista de Obras Sociales */}
           <div className="obras-sociales-list">
-            {obrasSociales.map((obra) => (
+            {loadingObras ? <p>Cargando obras sociales...</p>: obrasSociales.map((obra) => (
               <div key={obra.id} className="obra-social-item">
                 <div className="obra-social-info">
                   <h4>{obra.nombre}</h4>
@@ -309,7 +332,7 @@ const Admin = () => {
                 onChange={(e) => setFiltroEstado(e.target.value)}
               >
                 <option value="">Todos</option>
-                <option value="Solicitada">Solicitada</option>
+                <option value="Pendiente">Pendiente</option>
                 <option value="Confirmada">Confirmada</option>
                 <option value="Cancelada">Cancelada</option>
               </select>
@@ -318,14 +341,15 @@ const Admin = () => {
 
           {/* Lista de Citas */}
           <div className="citas-list">
-            {citasOrdenadas.map((cita) => (
+            { loadingCitas ? <p>Cargando citas...</p>: citasOrdenadas.map((cita) => (
               <div key={cita.id} className="cita-item">
                 <div className="cita-info">
-                  <div className="cita-id">{cita.id}</div>
+                  <div className="cita-id">ID: {cita.id}</div>
                   <div className="cita-detalle">
-                    <h4>{cita.paciente}</h4>
-                    <p>{formatFecha(cita.fecha)} · {cita.hora}</p>
+                    <h4>{cita.nombre} {cita.apellido}</h4>
+                    <p>{formatFecha(cita.fecha)} · {cita.horario}</p>
                     <p className="cita-email"><Mail size={14} /> {cita.email}</p>
+                    <p className='cita-obra-social'><Building size={14} /> {cita.ObraSocial ? cita.ObraSocial.nombre : 'No especificada'}</p>
                   </div>
                 </div>
                 <div className="cita-estado">
@@ -335,16 +359,16 @@ const Admin = () => {
                   }`}>{cita.estado}</span>
                 </div>
                 <div className="cita-actions">
-                  {cita.estado === 'Solicitada' && (
-                    <button className="btn btn-primary" onClick={() => confirmarCita(cita.id)}>
-                      <CheckCircle size={16} /> Confirmar
+                  
+                    <button className="btn btn-primary" onClick={() => confirmarCita(cita.id)} disabled={loadingCitas}>
+                      <CheckCircle size={18} /> Confirmar
                     </button>
-                  )}
-                  {(cita.estado === 'Solicitada' || cita.estado === 'Confirmada') && (
-                    <button className="btn btn-outline btn-danger" onClick={() => cancelarCita(cita.id)}>
+                  
+                  
+                    <button className="btn btn-outline btn-danger" onClick={() => cancelarCita(cita.id)} disabled={loadingCitas}>
                       <X size={16} /> Cancelar
                     </button>
-                  )}
+                  
                   <button className="btn btn-outline" onClick={() => notificarPorEmail(cita)}>
                     <Mail size={16} /> Notificar Email
                   </button>

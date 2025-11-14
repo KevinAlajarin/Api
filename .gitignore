@@ -1,0 +1,12 @@
+# Ignorar dependencias de Node.js (Frontend y Backend)
+client/node_modules/
+Backend/node_modules/
+
+# Ignorar el archivo de variables de entorno del Backend (¡Seguridad!)
+Backend/.env
+
+# Archivos de caché y logs
+.DS_Store
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
