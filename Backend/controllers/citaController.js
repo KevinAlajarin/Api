@@ -1,4 +1,6 @@
 import db from '../models/index.js'; // Importamos la DB
+import { enviarEmailConfirmacion, enviarEmailCancelacion } from '../services/emailService.js';
+
 const Cita = db.Cita;
 const ObraSocial = db.ObraSocial;
 
@@ -101,10 +103,19 @@ export const actualizarEstadoCita = async (req, res) => {
     }
 
     try {
-        const cita = await Cita.findByPk(id);
+        const cita = await Cita.findByPk(id, {
+            include: [{
+                model: ObraSocial,
+                attributes: ['nombre']
+            }]
+        });
+        
         if (!cita) {
             return res.status(404).json({ message: 'Cita no encontrada' });
         }
+
+        // Guardamos el estado anterior para comparar
+        const estadoAnterior = cita.estado;
 
         cita.estado = estado; // Actualizamos el estado
         await cita.save(); // Guardamos los cambios
@@ -116,6 +127,22 @@ export const actualizarEstadoCita = async (req, res) => {
                 attributes: ['nombre']
             }]
         });
+
+        // Enviar email de notificación solo si el estado cambió y es Confirmada o Cancelada
+        // Solo enviamos email si el estado anterior era diferente (evitamos reenvíos)
+        if (estadoAnterior !== estado) {
+            try {
+                if (estado === 'Confirmada') {
+                    await enviarEmailConfirmacion(citaActualizada);
+                } else if (estado === 'Cancelada') {
+                    await enviarEmailCancelacion(citaActualizada);
+                }
+            } catch (emailError) {
+                // Si falla el envío del email, lo registramos pero no fallamos la actualización
+                console.error('⚠️ Error al enviar email de notificación:', emailError);
+                // La respuesta sigue siendo exitosa porque la cita se actualizó correctamente
+            }
+        }
 
         res.json(citaActualizada); // Devuelve la cita completa y actualizada
     } catch (error) {
