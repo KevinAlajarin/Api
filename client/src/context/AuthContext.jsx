@@ -1,4 +1,8 @@
 import { createContext, useContext, useState, useEffect } from 'react';
+import axios from 'axios'; // Importamos axios
+
+// URL de tu backend para autenticación
+const API_URL = 'http://localhost:3000/api/auth';
 
 const AuthContext = createContext();
 
@@ -15,14 +19,18 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Verificar si hay un usuario guardado en localStorage
+    // Verificar si hay un usuario y token guardados al recargar
     const savedUser = localStorage.getItem('user');
-    if (savedUser) {
+    const savedToken = localStorage.getItem('token');
+
+    if (savedUser && savedToken) {
       try {
         setUser(JSON.parse(savedUser));
+        // Opcional: Aquí podrías validar si el token sigue siendo válido con el backend
       } catch (error) {
         console.error('Error al parsear usuario guardado:', error);
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
       }
     }
     setLoading(false);
@@ -30,42 +38,35 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (credentials) => {
     try {
-      // Credenciales válidas hardcodeadas
-      const validCredentials = {
-        'medico': '123456',
-        'secretaria': '123456'
-      };
+      // Llamamos al endpoint de login del backend
+      // Enviamos { username: '...', password: '...' }
+      const response = await axios.post(`${API_URL}/login`, credentials);
 
-      // Validar credenciales
-      if (!validCredentials[credentials.username] || 
-          validCredentials[credentials.username] !== credentials.password) {
-        return { 
-          success: false, 
-          error: 'Credenciales inválidas.' 
-        };
+      if (response.data.success) {
+        const { user, token } = response.data;
+
+        // Guardamos el usuario en el estado
+        setUser(user);
+
+        // Guardamos sesión en localStorage
+        localStorage.setItem('user', JSON.stringify(user));
+        localStorage.setItem('token', token);
+
+        return { success: true, user };
       }
-
-      // Crear usuario mock solo si las credenciales son válidas
-      const mockUser = {
-        id: credentials.username === 'medico' ? 1 : 2,
-        username: credentials.username,
-        role: credentials.username === 'medico' ? 'medico' : 'secretaria',
-        name: credentials.username === 'medico' ? 'Dr. Juan Pérez' : 'María González',
-        email: credentials.username === 'medico' ? 'dr.perez@clinica.com' : 'secretaria@clinica.com'
-      };
-
-      setUser(mockUser);
-      localStorage.setItem('user', JSON.stringify(mockUser));
-      return { success: true, user: mockUser };
+      
     } catch (error) {
       console.error('Error en login:', error);
-      return { success: false, error: error.message };
+      // Capturamos el mensaje de error que viene del backend (ej: "Contraseña incorrecta")
+      const errorMessage = error.response?.data?.message || 'Error al conectar con el servidor';
+      return { success: false, error: errorMessage };
     }
   };
 
   const logout = () => {
     setUser(null);
     localStorage.removeItem('user');
+    localStorage.removeItem('token');
   };
 
   const isAuthenticated = () => {

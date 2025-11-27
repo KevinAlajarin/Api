@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useSocialSecurity } from '../context/SocialSecurityContext';
 import { Plus, Edit, Trash2, Calendar, Building, Users, X, Mail, CheckCircle } from 'lucide-react';
@@ -12,21 +12,23 @@ const Admin = () => {
     loading : loadingObras, 
     createObraSocial, 
     updateObraSocial, 
-    deleteObraSocial 
   } = useSocialSecurity();
 
 
   const {
     citas: citasReales,
     loading: loadingCitas,
-    updateCitaEstado
+    updateCitaEstado,
+    fetchCitas
   } = useCitas();
+
+  useEffect(() => {
+    fetchCitas();
+  }, [fetchCitas]);
 
   const [showObraSocialForm, setShowObraSocialForm] = useState(false);
   const [editingObraSocial, setEditingObraSocial] = useState(null);
   const [formData, setFormData] = useState({ nombre: '', activa: true });
-  const [showConfirm, setShowConfirm] = useState(false);
-  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
   const [showEmailInfo, setShowEmailInfo] = useState(false);
   const [emailNotificado, setEmailNotificado] = useState('');
   
@@ -48,20 +50,26 @@ const Admin = () => {
     return ordenFecha === 'reciente' ? db - da : da - db;
   });
 
-  const confirmarCita = (id) => {
-    updateCitaEstado(id, 'Confirmada');
+  const confirmarCita = async (id) => {
+    const result = await updateCitaEstado(id, 'Confirmada');
+    if (result.success) {
+      const citaConfirmada = result.cita || citasReales.find(c => c.id === id);
+      setEmailNotificado(citaConfirmada.email);
+      setShowEmailInfo(true);
+    }
+    
   };
 
-  const cancelarCita = (id) => {
-    updateCitaEstado(id, 'Cancelada');
+  const cancelarCita = async (id) => {
+    const result = await updateCitaEstado(id, 'Cancelada');
+    if (result.success) {
+      const citaConfirmada = result.cita || citasReales.find(c => c.id === id);
+      setEmailNotificado(citaConfirmada.email);
+      setShowEmailInfo(true);
+    }
   };
 
-  const notificarPorEmail = (cita) => {
-    // Simulación de notificación por email con modal propio
-    console.log(`Notificando por email a ${cita.email} para la cita ${cita.id}`);
-    setEmailNotificado(cita.email);
-    setShowEmailInfo(true);
-  };
+  
 
   const formatFecha = (isoDateStr) => {
     // Esperado: YYYY-MM-DD → Devuelve: DD-MM-YYYY
@@ -113,23 +121,8 @@ const Admin = () => {
     setShowObraSocialForm(true);
   };
 
-  const handleDelete = (id) => {
-    setConfirmDeleteId(id);
-    setShowConfirm(true);
-  };
+ 
 
-  const confirmDeletion = async () => {
-    if (confirmDeleteId) {
-      await deleteObraSocial(confirmDeleteId);
-    }
-    setShowConfirm(false);
-    setConfirmDeleteId(null);
-  };
-
-  const cancelDeletion = () => {
-    setShowConfirm(false);
-    setConfirmDeleteId(null);
-  };
 
   const handleCancel = () => {
     setEditingObraSocial(null);
@@ -251,26 +244,6 @@ const Admin = () => {
             </div>
           )}
 
-          {/* Modal de confirmación de eliminación */}
-          {showConfirm && (
-            <div className="modal-overlay">
-              <div className="modal">
-                <div className="modal-header">
-                  <h3 className="modal-title">Confirmar eliminación</h3>
-                  <button className="modal-close" onClick={cancelDeletion} aria-label="Cerrar">
-                    <X size={20} />
-                  </button>
-                </div>
-                <div className="modal-body">
-                  <p>¿Está seguro de que desea eliminar esta obra social? Esta acción no se puede deshacer.</p>
-                  <div className="modal-actions">
-                    <button className="btn btn-primary" onClick={confirmDeletion}>Eliminar</button>
-                    <button className="btn btn-outline" onClick={cancelDeletion}>Cancelar</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Lista de Obras Sociales */}
           <div className="obras-sociales-list">
@@ -290,13 +263,7 @@ const Admin = () => {
                   >
                     <Edit size={16} />
                   </button>
-                  <button 
-                    className="btn-icon btn-danger"
-                    onClick={() => handleDelete(obra.id)}
-                    title="Eliminar"
-                  >
-                    <Trash2 size={16} />
-                  </button>
+                  
                 </div>
               </div>
             ))}
@@ -369,9 +336,6 @@ const Admin = () => {
                       <X size={16} /> Cancelar
                     </button>
                   
-                  <button className="btn btn-outline" onClick={() => notificarPorEmail(cita)}>
-                    <Mail size={16} /> Notificar Email
-                  </button>
                 </div>
               </div>
             ))}

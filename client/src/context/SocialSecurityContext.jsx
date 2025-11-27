@@ -104,26 +104,8 @@ export const SocialSecurityProvider = ({ children }) => {
     }
   };
 
-  // Eliminar obra social (Admin)
-  const deleteObraSocial = async (id) => {
-    setLoading(true);
-    try {
-      // Llamamos a la API con DELETE
-      await axios.delete(`${API_URL}/${id}`);
-      
-      // Actualizamos el estado local
-      setObrasSociales(obrasSociales.filter(obra => obra.id !== id));
-      
-      return { success: true };
-
-    } catch (error) {
-      console.error('Error al eliminar obra social:', error);
-      const errorMessage = error.response?.data?.message || error.message;
-      return { success: false, error: errorMessage };
-    } finally {
-      setLoading(false);
-    }
-  };
+  
+  
 
   // --- FUNCIONES PÚBLICAS (Para el Form.jsx) ---
 
@@ -144,7 +126,6 @@ export const SocialSecurityProvider = ({ children }) => {
     fetchObrasSociales, // Para refrescar la lista si es necesario
     createObraSocial,
     updateObraSocial,
-    deleteObraSocial,
     getActiveObrasSociales, // Lista filtrada para el Formulario
     getObraSocialById
   };
