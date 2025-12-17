@@ -6,14 +6,30 @@ const ObraSocial = db.ObraSocial;
 
 
 
-const generarHorariosDelDia = () => {
+const generarHorariosDelDia = (fechaSeleccionada) => {
     const slots = [];
     const horaInicio = 9;
     const horaFin = 18; // El loop va hasta 16
+    const ahora = new Date();
+    const fechaHoy = ahora.toISOString().split('T')[0];
+    const esHoy = (fechaHoy === fechaSeleccionada);
+
+    let minutosActuales = 0;
+
+    if(esHoy) {
+        minutosActuales = ahora.getHours() * 60 + ahora.getMinutes();
+    }
 
     for (let hour = horaInicio; hour < horaFin; hour++) {
-        slots.push(`${hour.toString().padStart(2, '0')}:00`);
-        slots.push(`${hour.toString().padStart(2, '0')}:30`);
+        let minutosSlot = hour * 60;
+        if (!esHoy || minutosSlot > minutosActuales) {
+            slots.push(`${hour.toString().padStart(2, '0')}:00`);
+        }
+
+        minutosSlot = hour * 60 + 30;
+        if (!esHoy || minutosSlot > minutosActuales) {
+            slots.push(`${hour.toString().padStart(2, '0')}:30`);
+        }
     }
     // Esta lógica genera hasta las 16:30
     return slots;
@@ -29,7 +45,7 @@ export const obtenerDisponibilidad = async (req, res) => {
 
     try {
         // 1. Obtener todos los horarios posibles
-        const todosLosSlots = generarHorariosDelDia();
+        const todosLosSlots = generarHorariosDelDia(fecha);
 
         // 2. Buscar en la DB los horarios ya ocupados para esa fecha
         const citasOcupadas = await Cita.findAll({

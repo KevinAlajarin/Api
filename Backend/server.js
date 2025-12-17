@@ -23,7 +23,7 @@ app.use("/api/auth", authRoutes);
 const PORT = process.env.PORT || 3000;
 
 // 4. Usamos 'db.sequelize' para sincronizar
-sequelize.sync({ alter: true }) // crea o actualiza tablas
+sequelize.sync() // crea o actualiza tablas
     .then(() => {
         console.log("✅ Conectado a MySQL con Sequelize");
         app.listen(PORT, () => console.log(`🚀 Servidor en http://localhost:${PORT}`));
