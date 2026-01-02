@@ -426,7 +426,8 @@ Iniciar el Servidor:
 Bash
 
 npm start
-# O para modo desarrollo con nodemon:
+
+O para modo desarrollo con nodemon:
 npm run dev
 El backend correrá en: http://localhost:3000
 
