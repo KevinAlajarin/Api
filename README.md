@@ -417,7 +417,6 @@ DB_PASSWORD=tu_contraseña_mysql
 DB_NAME=citas_medicas_db
 DB_DIALECT=mysql
 
-# Configuración de SendGrid (Opcional si no vas a testear emails)
 SENDGRID_API_KEY=tu_api_key_de_sendgrid
 SENDGRID_FROM_EMAIL=tu_email_verificado_en_sendgrid
 
