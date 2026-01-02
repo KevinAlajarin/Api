@@ -393,4 +393,47 @@ API/
 └── README.md
 ```
 
+## Pasos de instalacion
 
+Requisitos Previos:
+
+- Node.js (v16 o superior)
+- MySQL (Server en ejecución)
+- Git
+
+1. Clonar el repositorio
+git clone [ <URL_DE_TU_REPOSITORIO>](https://github.com/KevinAlajarin/Api)
+cd <NOMBRE_DEL_PROYECTO>
+
+2. Configurar el Backend
+-- cd Backend
+-- npm install
+   
+3. Configuración de Variables de Entorno (.env):
+PORT=3000
+DB_HOST=localhost
+DB_USER=root
+DB_PASSWORD=tu_contraseña_mysql
+DB_NAME=citas_medicas_db
+DB_DIALECT=mysql
+
+# Configuración de SendGrid (Opcional si no vas a testear emails)
+SENDGRID_API_KEY=tu_api_key_de_sendgrid
+SENDGRID_FROM_EMAIL=tu_email_verificado_en_sendgrid
+
+4. Base de Datos:
+Iniciar el Servidor:
+
+Bash
+
+npm start
+# O para modo desarrollo con nodemon:
+npm run dev
+El backend correrá en: http://localhost:3000
+
+5. Configuracion del Frontend
+-- cd client
+-- npm install
+-- npm run dev
+
+El frontend correrá generalmente en: http://localhost:5173
